@@ -11,6 +11,8 @@
 
 @interface ViewController ()
 
+@property (nonatomic, strong) NSArray *demos;
+
 @end
 
 @implementation ViewController
@@ -18,18 +20,13 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
+    _demos = @[
+               @{@"title": @"Build value", @"method": @"buildValue"},
+               @{@"title": @"Print value", @"method": @"printValue"},
+               @{@"title": @"Auto save", @"method": @"autoSave"},
+               ];
     
-    UIButton *btn = [[UIButton alloc] initWithFrame:CGRectMake(0, 100, 100, 50)];
-    [btn setTitle:@"Build value" forState:UIControlStateNormal];
-    [btn setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
-    [btn addTarget:self action:@selector(buildValue) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:btn];
-    
-    btn = [[UIButton alloc] initWithFrame:CGRectMake(200, 100, 100, 50)];
-    [btn setTitle:@"Print value" forState:UIControlStateNormal];
-    [btn setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
-    [btn addTarget:self action:@selector(printValue) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:btn];
+    [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:@"Cell"];
     
     [self buildValue];
 }
@@ -37,6 +34,42 @@
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+#pragma mark - Table view data source
+
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+{
+    // Return the number of sections.
+    return 1;
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+    // Return the number of rows in the section.
+    return self.demos.count;
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    static NSString *CellIdentifier = @"Cell";
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier forIndexPath:indexPath];
+    
+    // Configure the cell...
+    NSDictionary *dic = [self.demos objectAtIndex:indexPath.row];
+    cell.textLabel.text = [dic objectForKey:@"title"];
+    return cell;
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    // Navigation logic may go here. Create and push another view controller.
+    SEL sel = NSSelectorFromString([self.demos objectAtIndex:indexPath.row][@"method"]);
+
+    if ([self respondsToSelector:sel])
+    {
+        [self performSelector:sel];
+    }
 }
 
 - (void)buildValue
@@ -111,4 +144,25 @@
     
 }
 
+- (void)autoSave
+{
+    NSLog(@"Wait 10s\n");
+    for (int i = 0; i < 100; i++)
+    {
+        People *people = [[People alloc] init];
+        [people bindInjectioWithSuiteName:[NSString stringWithFormat:@"autoSave_%04d", i]];
+        people.name = @"name";
+        people.age = i;
+        people.age2 = 20;
+        people.age3 = 30;
+        people.age4 = 40;
+        people.isAlive = YES;
+        people.isAlive2 = YES;
+        people.height = 180.1;
+        people.height2 = 180.2;
+        people.height3 = 180.3;
+        people.num = @9999;
+    }
+    NSLog(@"Now, you can Enter Background\n");
+}
 @end

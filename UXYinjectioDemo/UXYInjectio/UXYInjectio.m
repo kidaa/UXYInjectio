@@ -50,6 +50,7 @@
 @property (nonatomic, assign) BOOL uxyOptimizeStorage;
 
 - (id)initWithSuiteName:(NSString *)name;
+- (BOOL)uxySynchronize;
 @end
 
 #pragma mark- NSObject
@@ -126,6 +127,7 @@ id uxyForwardingTargetForSelectorMethodIMP(id self, SEL _cmd, SEL aSelector)
         _injectioDictionary = [@{} mutableCopy];
         _propertyTypeInfo   = [@{} mutableCopy];
         _swizzledClass      = [NSMutableSet set];
+        [self registerNotification];
     }
     return self;
 }
@@ -162,6 +164,32 @@ id uxyForwardingTargetForSelectorMethodIMP(id self, SEL _cmd, SEL aSelector)
     return [[NSThread currentThread] threadDictionary][UXYInjectio_associatedCurrentObject];
 }
 #pragma mark - private
+- (void)registerNotification
+{
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(saveUserDefaults) name:UIApplicationWillTerminateNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(saveUserDefaults) name:UIApplicationDidEnterBackgroundNotification object:nil];
+}
+
+- (void)saveUserDefaults
+{
+    UIApplication *application = [UIApplication sharedApplication];
+    __block UIBackgroundTaskIdentifier bgTask = [application beginBackgroundTaskWithExpirationHandler:^{
+        [application endBackgroundTask:bgTask];
+        bgTask = UIBackgroundTaskInvalid;
+    }];
+    
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        for (NSString *key in _injectioDictionary)
+        {
+            UXYInjectio *injectio = _injectioDictionary[key];
+            [injectio uxySynchronize];
+        }
+        [application endBackgroundTask:bgTask];
+        bgTask = UIBackgroundTaskInvalid;
+    });
+    
+}
+
 - (void)swizzleInstanceMethodWithClass:(Class)clazz originalSel:(SEL)original replacementSel:(SEL)replacement
 {
     Method a = class_getInstanceMethod(clazz, original);
@@ -301,18 +329,6 @@ id uxyForwardingTargetForSelectorMethodIMP(id self, SEL _cmd, SEL aSelector)
     if (self)
     {
         _uxyInnerData = [NSUserDefaults standardUserDefaults];
-        [self registerNotification];
-    }
-    return self;
-}
-
-- (id)initWithSuiteName:(NSString *)name
-{
-    self = [super init];
-    if (self)
-    {
-        _uxyInjectioName = name;
-        _uxyInnerData    = [[NSUserDefaults alloc] initWithSuiteName:name];
     }
     return self;
 }
@@ -385,19 +401,21 @@ id uxyForwardingTargetForSelectorMethodIMP(id self, SEL _cmd, SEL aSelector)
 }
 
 #pragma mark - api
-
+- (id)initWithSuiteName:(NSString *)name
+{
+    self = [super init];
+    if (self)
+    {
+        _uxyInjectioName = name;
+        _uxyInnerData    = [[NSUserDefaults alloc] initWithSuiteName:name];
+    }
+    return self;
+}
+- (BOOL)uxySynchronize
+{
+    return  [_uxyInnerData synchronize];
+}
 #pragma mark - private
-- (void)registerNotification
-{
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(saveUserDefaults) name:UIApplicationWillTerminateNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(saveUserDefaults) name:UIApplicationDidEnterBackgroundNotification object:nil];
-}
-
-- (void)saveUserDefaults
-{
-    [[NSUserDefaults standardUserDefaults] synchronize];
-}
-
 - (NSString *)getterNameFromSelector:(SEL)aSelector
 {
     NSString *name = NSStringFromSelector(aSelector);
