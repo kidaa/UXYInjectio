@@ -59,9 +59,9 @@ id uxyForwardingTargetForSelectorMethodIMP(id self, SEL _cmd, SEL aSelector)
 {
     id injectio = [UXYInjectioHelper sharedInstance].injectioDictionary[[self uxySuiteName]];
     
-    return injectio ? ({[[UXYInjectioHelper sharedInstance] setCurrentObject:self]; injectio;}) :
+    return injectio ? ({ [[ UXYInjectioHelper sharedInstance] setCurrentObject:self]; injectio; }) :
     ({
-        NSMethodSignature *sig=[[self class] instanceMethodSignatureForSelector:@selector(uxyForwardingTargetForSelectorMethodIMP:)];
+        NSMethodSignature *sig = [[self class] instanceMethodSignatureForSelector:@selector(uxyForwardingTargetForSelectorMethodIMP:)];
         NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:sig];
         [invocation setTarget:self];
         [invocation setSelector:@selector(uxyForwardingTargetForSelectorMethodIMP:)];
@@ -99,7 +99,7 @@ id uxyForwardingTargetForSelectorMethodIMP(id self, SEL _cmd, SEL aSelector)
 
 - (NSString *)uxyInjectioProtocol
 {
-    return objc_getAssociatedObject(self, UXYInjectio_associatedInjectioProtocol) ? :
+    return objc_getAssociatedObject(self, UXYInjectio_associatedInjectioProtocol) ?:
     ({ NSMutableString *mString = [@"" mutableCopy];
         uint protocolCount = 0;
         __unsafe_unretained Protocol **protocolArray = class_copyProtocolList([self class], &protocolCount);
@@ -151,8 +151,8 @@ id uxyForwardingTargetForSelectorMethodIMP(id self, SEL _cmd, SEL aSelector)
 
 - (id)injectioForKey:(NSString *)key withClass:(Class)clazz
 {
-    NSString *injectioKey = key ? : @"";
-    return _injectioDictionary[injectioKey] ? : ({ _injectioDictionary[injectioKey] = [[UXYInjectio alloc] initWithSuiteName:injectioKey], _injectioDictionary[injectioKey]; });
+    NSString *injectioKey = key ?: @"";
+    return _injectioDictionary[injectioKey] ?: ({ _injectioDictionary[injectioKey] = [[UXYInjectio alloc] initWithSuiteName:injectioKey]; _injectioDictionary[injectioKey]; });
 }
 - (void)setCurrentObject:(id)anObject
 {
@@ -274,7 +274,7 @@ id uxyForwardingTargetForSelectorMethodIMP(id self, SEL _cmd, SEL aSelector)
 
 - (NSDictionary *)setterSelectorMap
 {
-    return _setterSelectorMap ? : ({ _setterSelectorMap = @{
+    return _setterSelectorMap ?: ({ _setterSelectorMap = @{
                                                             @"object": @"setObject:forKey:",
                                                             @"data": @"setObject:forKey:",
                                                             @"array": @"setObject:forKey:",
@@ -283,38 +283,38 @@ id uxyForwardingTargetForSelectorMethodIMP(id self, SEL _cmd, SEL aSelector)
                                                             @"bool": @"setBool:forKey:",
                                                             @"float": @"setFloat:forKey:",
                                                             @"double": @"setDouble:forKey:",
-                                                            }, _setterSelectorMap; });
+                                                            }; _setterSelectorMap; });
 }
 - (NSDictionary *)getterSelectorMap
 {
-    return _getterSelectorMap ? : ({ _getterSelectorMap = @{
-                                                            @"object": @"objectForKey:",
-                                                            @"data": @"dataForKey:",
-                                                            @"array" : @"arrayForKey:",
-                                                            @"dictionary" : @"dictionaryForKey:",
-                                                            @"integer": @"integerForKey:",
-                                                            @"bool" :@"boolForKey:",
-                                                            @"float": @"floatForKey:",
-                                                            @"double": @"doubleForKey:",
-                                                            }, _getterSelectorMap; });
+    return _getterSelectorMap ?: ({ _getterSelectorMap = @{
+                                                           @"object": @"objectForKey:",
+                                                           @"data": @"dataForKey:",
+                                                           @"array" : @"arrayForKey:",
+                                                           @"dictionary" : @"dictionaryForKey:",
+                                                           @"integer": @"integerForKey:",
+                                                           @"bool" :@"boolForKey:",
+                                                           @"float": @"floatForKey:",
+                                                           @"double": @"doubleForKey:",
+                                                           }; _getterSelectorMap; });
 }
 
 - (NSDictionary *)propertyTypeMap
 {
-    return _propertyTypeMap ? : ({_propertyTypeMap = @{
-                                                       @"NSString" : @"object",
-                                                       @"NSNumber" : @"object",
-                                                       @"NSData" : @"data",
-                                                       @"NSArray" : @"array",
-                                                       @"NSDictionary" : @"dictionary",
-                                                       @"q" : @"integer",
-                                                       @"Q" : @"integer",
-                                                       @"i" : @"integer",
-                                                       @"I" : @"integer",
-                                                       @"B"  : @"bool",
-                                                       @"d" : @"double",
-                                                       @"f" : @"float",
-                                                       }, _propertyTypeMap; });
+    return _propertyTypeMap ?: ({_propertyTypeMap = @{
+                                                      @"NSString" : @"object",
+                                                      @"NSNumber" : @"object",
+                                                      @"NSData" : @"data",
+                                                      @"NSArray" : @"array",
+                                                      @"NSDictionary" : @"dictionary",
+                                                      @"q" : @"integer",
+                                                      @"Q" : @"integer",
+                                                      @"i" : @"integer",
+                                                      @"I" : @"integer",
+                                                      @"B"  : @"bool",
+                                                      @"d" : @"double",
+                                                      @"f" : @"float",
+                                                      }; _propertyTypeMap;});
 }
 @end
 
