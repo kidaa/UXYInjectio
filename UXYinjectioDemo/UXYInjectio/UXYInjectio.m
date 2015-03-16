@@ -312,6 +312,7 @@ id uxyForwardingTargetForSelectorMethodIMP(id self, SEL _cmd, SEL aSelector)
                                                       @"i" : @"integer",
                                                       @"I" : @"integer",
                                                       @"B"  : @"bool",
+                                                      @"c"  : @"bool",      // BOOL,char type: c
                                                       @"d" : @"double",
                                                       @"f" : @"float",
                                                       }; _propertyTypeMap;});
