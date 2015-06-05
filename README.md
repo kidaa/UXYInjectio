@@ -87,4 +87,3 @@ You can use different suite name to distinguish the data.
 
 ```
 UXYInjectio is based on NSUserDefaults. Call method immediatelySaveInjectio to synchronize.When the app enters the background  it will be called automatically..
-
