@@ -14,6 +14,8 @@ UXYInjectio can use Protocol to share data that data has been autosaved.
 
 @interface AppConfig : NSObject <AppConfigData>
 @end
+@implementation AppConfig
+@end
 ```
 
 ```
@@ -51,7 +53,14 @@ The value parameter can be only property list objects: NSData, NSString, NSNumbe
 You can use any instance with any Protocol. The same suite name is same data.
 
 ```
+@interface People : NSObject <PeopleData>
+@end
+@implementation People
+@end
+
 @interface Man : NSObject <ManData, PeopleData>
+@end
+@implementation Man
 @end
 
 {
